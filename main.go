@@ -217,50 +217,53 @@ func main() {
 
 				httpclient := &http.Client{}
 
-				getDockerDigestUrl := registry_url + "/v2/" + repolist.Repositories[i] + "/manifests/" + "develop_0.0.1_4"
+				for j := range delete_tags_array {
 
-				tagdigestequest, err := http.NewRequest("GET", getDockerDigestUrl, nil)
-				if err != nil {
-					log.Fatalln(err)
-				}
+					getDockerDigestUrl := registry_url + "/v2/" + repolist.Repositories[i] + "/manifests/" + delete_tags_array[j]
 
-				tagdigestequest.Header.Add("Accept", "application/vnd.docker.distribution.manifest.v2+json")
+					tagdigestequest, err := http.NewRequest("GET", getDockerDigestUrl, nil)
+					if err != nil {
+						log.Fatalln(err)
+					}
 
-				tagdigestresponse, err := httpclient.Do(tagdigestequest)
-				if err != nil {
-					fmt.Println("Error sending HTTP request:", err)
-					return
-				}
+					tagdigestequest.Header.Add("Accept", "application/vnd.docker.distribution.manifest.v2+json")
 
-				defer tagdigestresponse.Body.Close()
+					tagdigestresponse, err := httpclient.Do(tagdigestequest)
+					if err != nil {
+						fmt.Println("Error sending HTTP request:", err)
+						return
+					}
 
-				tagdigestresponseheaders := tagdigestresponse.Header
+					defer tagdigestresponse.Body.Close()
 
-				digestValue := tagdigestresponseheaders["Docker-Content-Digest"][0]
+					tagdigestresponseheaders := tagdigestresponse.Header
 
-				tagDeleteRequestURL := registry_url + "/v2/" + repolist.Repositories[i] + "/manifests/" + digestValue
+					digestValue := tagdigestresponseheaders["Docker-Content-Digest"][0]
 
-				tagdeleterequest, err := http.NewRequest("DELETE", tagDeleteRequestURL, nil)
-				if err != nil {
-					log.Fatalln(err)
-				}
+					tagDeleteRequestURL := registry_url + "/v2/" + repolist.Repositories[i] + "/manifests/" + digestValue
 
-				tagdeleterequest.Header.Add("Accept", "application/vnd.docker.distribution.manifest.v2+json")
+					tagdeleterequest, err := http.NewRequest("DELETE", tagDeleteRequestURL, nil)
+					if err != nil {
+						log.Fatalln(err)
+					}
 
-				tagdeleteresponse, err := httpclient.Do(tagdeleterequest)
-				if err != nil {
-					fmt.Println("Error sending HTTP request:", err)
-					return
-				}
+					tagdeleterequest.Header.Add("Accept", "application/vnd.docker.distribution.manifest.v2+json")
 
-				defer tagdeleteresponse.Body.Close()
+					tagdeleteresponse, err := httpclient.Do(tagdeleterequest)
+					if err != nil {
+						fmt.Println("Error sending HTTP request:", err)
+						return
+					}
 
-				deletestatuscode := tagdeleteresponse.StatusCode
+					defer tagdeleteresponse.Body.Close()
 
-				if deletestatuscode == 202 {
-					fmt.Println("Sucessfully deleted")
-				} else {
-					fmt.Println("Error occurd while deleting", deletestatuscode)
+					deletestatuscode := tagdeleteresponse.StatusCode
+
+					if deletestatuscode == 202 {
+						fmt.Println("Sucessfully deleted")
+					} else {
+						fmt.Println("Error occurd while deleting", deletestatuscode)
+					}
 				}
 
 			}

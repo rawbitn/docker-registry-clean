@@ -3,3 +3,16 @@ export TMPDIR=~/tmp/
 go mod init example.com/packages
 prefix_arr = [false,false,false,false]
              develop_,hotfix_,master_,release_
+
+
+curls
+
+curl -k -X GET "https://10.200.140.150:5000/v2/_catalog?n=5000"
+
+curl -k -X GET "https://10.200.140.150:5000/v2/ui190app-test193react/tags/list"
+
+curl -kv -H "Accept: application/vnd.docker.distribution.manifest.v2+json" -X GET "https://10.200.140.150:5000/v2/ui190app-test193react/manifests/develop_0.0.4_3"
+
+sha256:1c5b7d8f89911e8c3a857cfb009061fe71e129bb0aeda2f9663a2ee11cfab0f4
+
+curl -kv -H "Accept: application/vnd.docker.distribution.manifest.v2+json" -X DELETE "https://10.200.140.150:5000/v2/ui190app-test193react/manifests/sha256:1c5b7d8f89911e8c3a857cfb009061fe71e129bb0aeda2f9663a2ee11cfab0f4"
