@@ -1,0 +1,5 @@
+export PATH=$PATH:/usr/local/go/bin
+export TMPDIR=~/tmp/
+go mod init example.com/packages
+prefix_arr = [false,false,false,false]
+             develop_,hotfix_,master_,release_
