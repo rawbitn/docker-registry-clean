@@ -1,3 +1,5 @@
+// Getindexes and Tagstodelete functions and ArryIndexes struct exports to utils package
+
 package utils
 
 import (
@@ -10,6 +12,8 @@ type ArrIndexes struct {
 	Masindex int
 	Relindex int
 }
+
+//Seperates the sorted arrary according to the tag prefix and returns the last indexes
 
 func Getindexes(original_array []string) ArrIndexes {
 
@@ -36,6 +40,7 @@ func Getindexes(original_array []string) ArrIndexes {
 
 }
 
+// creates a new array excluding the tags which need to be keep on the registry and returns that array
 func Tagstodelete(input_array []string, keep_tags int) []string {
 
 	var delete_tag_array []string

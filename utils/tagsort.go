@@ -1,3 +1,5 @@
+//Exports CustomVersionSort function to utils package
+
 package utils
 
 import (
@@ -6,6 +8,7 @@ import (
 	"strings"
 )
 
+// struct use to return tag version values as integers
 type versionParts struct {
 	major int
 	minor int
@@ -13,6 +16,7 @@ type versionParts struct {
 	build int
 }
 
+// Sorts a array according to tag version and returns the sorted array
 func CustomVersionSort(versions []string) {
 	sort.Slice(versions, func(i, j int) bool {
 		v1 := extractVersionParts(versions[i])
@@ -21,6 +25,7 @@ func CustomVersionSort(versions []string) {
 	})
 }
 
+// Extracts the tag version values as integers and returns a struct (which includes four values)
 func extractVersionParts(version string) versionParts {
 	parts := strings.Split(version, "_")
 	var int_version versionParts
@@ -34,6 +39,8 @@ func extractVersionParts(version string) versionParts {
 	return int_version
 }
 
+// Determines the version value is less or greater according to the tag version values. Returns
+// true if second tag version is higher
 func isLessVersion(v1, v2 versionParts) bool {
 	switch {
 	case v1.major < v2.major:

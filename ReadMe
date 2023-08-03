@@ -7,7 +7,7 @@ prefix_arr = [false,false,false,false]
 
 curls
 
-curl -k -X GET "https://10.200.140.150:5000/v2/_catalog?n=5000"
+curl -X GET "https://10.200.140.150:5000/v2/_catalog?n=5000"
 
 curl -k -X GET "https://10.200.140.150:5000/v2/ui190app-test193react/tags/list"
 
