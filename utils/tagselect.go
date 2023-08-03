@@ -13,7 +13,7 @@ type ArrIndexes struct {
 	Relindex int
 }
 
-//Seperates the sorted arrary according to the tag prefix and returns the last indexes
+// seperates the sorted arrary according to the tag prefix and returns the last indexes
 
 func Getindexes(original_array []string) ArrIndexes {
 
@@ -40,7 +40,7 @@ func Getindexes(original_array []string) ArrIndexes {
 
 }
 
-// creates a new array excluding the tags which need to be keep on the registry and returns that array
+// creates a new array excluding the tags which need to be kept on the registry and returns that array
 func Tagstodelete(input_array []string, keep_tags int) []string {
 
 	var delete_tag_array []string

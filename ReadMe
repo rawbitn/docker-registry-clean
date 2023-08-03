@@ -1,18 +1,72 @@
-export PATH=$PATH:/usr/local/go/bin
-export TMPDIR=~/tmp/
-go mod init example.com/packages
-prefix_arr = [false,false,false,false]
-             develop_,hotfix_,master_,release_
+------------
+Introduction
+------------
+
+Simply, a private container registry stores the container images in a centralized location related to an 
+organization and reduces the management overhead of container images.
+
+In an organization, when the number of projects becomes larger, a large number of container images will 
+be pushed to the container registry. Even though the container registries have an optimized way to store images
+(as layers), allocated storage will not be enough with time.
+
+Increasing the storage will not be a viable solution for many organizations. Especially in the aspect
+of cloud cost.
+
+Therefore, the implementation of a mechanism/process to clear the container registry periodically is required.
+Automating this process will be beneficial in many ways. 
+
+There can be many approaches to solving the above type of problem. Here I have discussed an approach to solve this
+when using a docker registry.
+
+-------------
+CICD Workflow
+-------------
+
+An Organization uses four types of git branches.
+
+1. develop 
+2. release
+3. hotfix
+4. master
+
+Docker images are built to deploy the application in different environments such as DEV, QA, PROD etc according
+to the tag.
+The constructed images are pushed to the docker registry with the convention "GitProjectName:GitTag"
+
+ex:
+    sample-project:develop_0.0.1_12
+    sample-project:release_0.0.1_3
+    sample-project:master_0.0.1_12
+
+In the docker registry "sample-project" is the image name(repository) and develop_0.0.1_12,release_0.0.1_3 and 
+master_0.0.1_12 are the tags.
+
+----
+Flow
+----
+
+This code is written in Go 1.19.5 and docker registry API V2 (https://docs.docker.com/registry/spec/api/)
+ 
+01. Get the repository list from the docker registry
+02. Iterate through each repository and get the tag list
+03. Sort the tag list and separate the tags according to the Git branch name
+04. keep the latest 5 tags (this value is defined in "KEEP_TAGS" in the application.properties file) and construct a
+    new list with the tags to be deleted
+05. Get Docker-Content-Digest for each tag
+06. Delete the manifest using Docker-Content-Digest
 
 
-curls
+* After the deletion process garbage collector might need to run in the docker registry
 
-curl -X GET "https://10.200.140.150:5000/v2/_catalog?n=5000"
 
-curl -k -X GET "https://10.200.140.150:5000/v2/ui190app-test193react/tags/list"
+---------------------
+Related curl commands 
+---------------------
 
-curl -kv -H "Accept: application/vnd.docker.distribution.manifest.v2+json" -X GET "https://10.200.140.150:5000/v2/ui190app-test193react/manifests/develop_0.0.4_3"
+curl -X GET "https://<docker-registry-ip-and-port-or-url>/v2/_catalog?n=5000"
 
-sha256:1c5b7d8f89911e8c3a857cfb009061fe71e129bb0aeda2f9663a2ee11cfab0f4
+curl -X GET "https://<docker-registry-ip-and-port-or-url>/v2/<repository>/tags/list"
 
-curl -kv -H "Accept: application/vnd.docker.distribution.manifest.v2+json" -X DELETE "https://10.200.140.150:5000/v2/ui190app-test193react/manifests/sha256:1c5b7d8f89911e8c3a857cfb009061fe71e129bb0aeda2f9663a2ee11cfab0f4"
+curl -v -H "Accept: application/vnd.docker.distribution.manifest.v2+json" -X GET "https://<docker-registry-ip-and-port-or-url>/v2/<repository>/manifests/<tag>"
+
+curl -kv -H "Accept: application/vnd.docker.distribution.manifest.v2+json" -X DELETE "https://<docker-registry-ip-and-port-or-url>/v2/<repository>/manifests/<digest>"
